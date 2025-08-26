@@ -7,36 +7,35 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Beat Store</h1>
+  <header class="site-header">
+    <h1 class="logo">Beat Store</h1>
   </header>
 
   <!-- 🔍 Αναζήτηση -->
-  <section class="search-section">
+  <section class="search-bar">
     <input 
       type="text" 
       id="searchInput" 
-      placeholder="Αναζήτηση με τίτλο ή είδος..." 
+      placeholder="Αναζήτησε με τίτλο, tags ή κατηγορία..." 
     />
   </section>
 
-  <!-- 🎶 Vibes / κατηγορίες -->
-  <section class="vibes-section">
+  <!-- 🎶 Vibes / φίλτρα -->
+  <section class="filters">
     <button class="vibe-button" data-vibe="all">Όλα</button>
-    <button class="vibe-button" data-vibe="Trap / Drill">Trap / Drill</button>
-    <button class="vibe-button" data-vibe="Rap / Boombap">Rap / Boombap</button>
-    <button class="vibe-button" data-vibe="Latin Urban / Afro">Latin Urban / Afro</button>
-    <button class="vibe-button" data-vibe="Lofi">Lofi</button>
-    <button class="vibe-button" data-vibe="Custom">Custom</button>
+    <button class="vibe-button" data-vibe="trap">Trap / Drill</button>
+    <button class="vibe-button" data-vibe="latin">Latin Urban / Afro</button>
+    <button class="vibe-button" data-vibe="lofi">Lofi</button>
+    <button class="vibe-button" data-vibe="custom">Custom</button>
   </section>
 
-  <!-- 📀 Εκεί θα μπαίνουν τα beats -->
+  <!-- 📀 Beats -->
   <main>
-    <div id="beatsContainer"></div>
+    <div id="beatsContainer" class="beats-container"></div>
   </main>
 
-  <footer>
-    <p>© 2025 BeatStore</p>
+  <footer class="site-footer">
+    <p>© 2025 BeatStore | All Rights Reserved</p>
   </footer>
 
   <script src="scripts.js"></script>
