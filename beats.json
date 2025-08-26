@@ -1,47 +1,35 @@
-[
-    { 
-        "id": 5, 
-        "title": "Marios Beat (Custom Sample)", 
-        "audioSrc": "https://github.com/Visionsoundhub/vybezmadethis.beats/raw/refs/heads/main/Marios%20beat%20extended%2099BPM%20Eminor.mp3", 
-        "price": null, 
-        "status": "available", 
-        "category": "custom", 
-        "tags": ["custom", "melodic", "emotional", "sad"] 
+{
+  "beatslist": [
+    {
+      "id": 1752261082877,
+      "title": "Late Hours",
+      "audioSrc": "https://latinurbanafro.netlify.app/audio/laterhours-reggaeton.mp3",
+      "price": "79.99 €",
+      "priceRaw": 79.99,
+      "status": "available",
+      "category": "latin",
+      "tags": [
+        "love",
+        "party",
+        "upbeat"
+      ],
+      "checkoutUrl": "https://payhip.com/b/fSD16"
     },
-    { 
-        "id": 3, 
-        "title": "AI Experiment #1", 
-        "audioSrc": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
-        "price": "15€", 
-        "status": "available", 
-        "category": "ai", 
-        "tags": ["experimental", "electronic", "future"] 
-    },
-    { 
-        "id": 4, 
-        "title": "Old Vault Sketch", 
-        "audioSrc": "", 
-        "price": "30€", 
-        "status": "sold", 
-        "category": "vault", 
-        "tags": ["raw", "draft", "lofi-sketch"] 
-    },
-    { 
-        "id": 6, 
-        "title": "Fire Bars", 
-        "audioSrc": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", 
-        "price": "80€", 
-        "status": "available", 
-        "category": "trap", 
-        "tags": ["aggressive", "hard", "drill"] 
-    },
-    { 
-        "id": 7, 
-        "title": "Love Sunset", 
-        "audioSrc": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", 
-        "price": "80€", 
-        "status": "available", 
-        "category": "lofi", 
-        "tags": ["love", "romantic", "smooth", "chill"] 
+    {
+      "id": 1,
+      "title": "Grenzenlos",
+      "audioSrc": "/uploads/grenzenlos-tagged.mp3",
+      "price": "79.99 €",
+      "priceRaw": 79.99,
+      "status": "available",
+      "category": "trap",
+      "tags": [
+        "club",
+        "trap",
+        "afrotrap"
+      ],
+      "bpm": 135,
+      "key": "Fm"
     }
-]
+  ]
+}
