@@ -20,8 +20,8 @@ exports.handler = async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.SITE_URL}/thankyou.html`,
-      cancel_url: `${process.env.SITE_URL}/cancel.html`,
+      success_url: `${process.env.MY_SITE}/thankyou.html`,
+      cancel_url: `${process.env.MY_SITE}/cancel.html`,
     });
 
     return {
@@ -35,4 +35,5 @@ exports.handler = async (event) => {
       body: JSON.stringify({ error: "Stripe checkout failed" }),
     };
   }
+
 };
