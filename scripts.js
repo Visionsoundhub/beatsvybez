@@ -1,44 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
   const beatsContainer = document.getElementById("beatsContainer");
   const searchInput = document.getElementById("searchInput");
-  const vibeButtons = document.querySelectorAll(".vibe-button"); // Υποθέτω ότι έχεις κουμπιά με class="vibe-button"
 
   let allBeats = [];
 
-  // Φόρτωση beats από beats.json
+  // Φόρτωση beats από το beats.json
   fetch("beats.json")
     .then(res => res.json())
     .then(data => {
-      allBeats = data.beatslist; // Υποθέτω ότι το beats.json έχει το "beatslist" array
+      // Το Admin αποθηκεύει τα beats στο "beatslist"
+      allBeats = data.beatslist || []; 
       renderBeats(allBeats);
     })
-    .catch(err => console.error("Error loading beats:", err));
+    .catch(err => {
+      console.error("Δεν μπόρεσα να φορτώσω το beats.json:", err);
+      beatsContainer.innerHTML = "<p>Σφάλμα κατά τη φόρτωση των beats.</p>";
+    });
 
   function renderBeats(list) {
     beatsContainer.innerHTML = "";
-    if (list.length === 0) {
-      beatsContainer.innerHTML = "<p class='no-beats-message'>Δεν βρέθηκαν beats.</p>";
+    if (!list || list.length === 0) {
+      beatsContainer.innerHTML = "<p>Δεν υπάρχουν διαθέσιμα beats αυτή τη στιγμή.</p>";
       return;
     }
 
     list.forEach((beat) => {
-      const tags = beat.tags ? beat.tags.join(", ") : "";
-
+      // Δημιουργούμε το HTML για κάθε beat, χρησιμοποιώντας τις κλάσεις από το styles.css σου
       const beatCard = document.createElement("div");
-      beatCard.classList.add("beat-card"); // Χρησιμοποιούμε την κλάση σου για styling
+      beatCard.className = "beat-card"; // Υποθέτω ότι έχεις μια τέτοια κλάση
 
       beatCard.innerHTML = `
-        <div class="beat-header">
-          <h3 class="beat-title">${beat.title}</h3> 
-        </div>
-        <div class="beat-details">
-          <p class="beat-category"><strong>Κατηγορία:</strong> ${beat.category || "-"}</p>
-          ${tags ? `<p class="beat-tags"><strong>Tags:</strong> ${tags}</p>` : ""}
-          ${beat.bpm ? `<p class="beat-bpm"><strong>BPM:</strong> ${beat.bpm}</p>` : ""}
-          ${beat.key ? `<p class="beat-key"><strong>Key:</strong> ${beat.key}</p>` : ""}
+        <div class="beat-info">
+          <h3>${beat.title}</h3>
+          <p>Κατηγορία: ${beat.category || 'N/A'}</p>
         </div>
         <div class="beat-player">
-          <audio controls src="${beat.audioSrc}" class="audio-player"></audio>
+          <audio controls src="${beat.audioSrc}"></audio>
         </div>
         <div class="beat-actions">
           <span class="price">${beat.price}</span>
@@ -46,11 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
+      // Λειτουργία κουμπιού "Αγορά"
       beatCard.querySelector(".buy-button").addEventListener("click", () => {
         if (beat.checkoutUrl) {
-          window.open(beat.checkoutUrl, "_blank"); // Ανοίγει το Payhip link
+          window.open(beat.checkoutUrl, "_blank");
         } else {
-          alert(`Επικοινώνησε για αγορά: ${beat.title}`);
+          alert("Για αγορά, επικοινωνήστε μαζί μας.");
         }
       });
 
@@ -58,33 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 🔍 Αναζήτηση
-  searchInput.addEventListener("input", (e) => {
-    const term = e.target.value.toLowerCase();
-    const filtered = allBeats.filter(
-      (b) =>
+  // Λειτουργία αναζήτησης
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allBeats.filter(b => 
         b.title.toLowerCase().includes(term) ||
-        (b.category && b.category.toLowerCase().includes(term)) ||
-        (b.tags && b.tags.some(t => t.toLowerCase().includes(term)))
-    );
-    renderBeats(filtered);
-  });
-
-  // 🎚️ Φίλτρα
-  vibeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      vibeButtons.forEach(b => b.classList.remove('active')); // Αφαιρεί active από όλα
-      btn.classList.add('active'); // Προσθέτει active στο πατημένο
-
-      const vibe = btn.dataset.vibe;
-      if (vibe === "all") {
-        renderBeats(allBeats);
-      } else {
-        const filtered = allBeats.filter(
-          (b) => b.category && b.category.toLowerCase() === vibe
-        );
-        renderBeats(filtered);
-      }
+        (b.category && b.category.toLowerCase().includes(term))
+      );
+      renderBeats(filtered);
     });
-  });
+  }
 });
