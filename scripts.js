@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Stripe client με το Publishable Key
-    const stripe = Stripe("pk_live_51S0JjoLu6b81hM6KW6pHuQNGMh2sXTsyYw9iCt2Esw8Fr9BA41WLnaUEgvUmLbrzZKL0Fy5XNNp9Q3Eck3CBWyTk00WjPJIuo3");
+    // Stripe client με Publishable Key
+    const stripe = Stripe("YOUR_PUBLISHABLE_KEY"); // βάλε εδώ το pk_test_... ή pk_live_...
 
     // --- CONFIGURATION & DOM ELEMENTS ---
     const a = {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     beatId: beat.id,
                     title: beat.title,
-                    price: beat.priceRaw // ευρώ σε μορφή number
+                    price: beat.priceRaw // ευρώ
                 })
             });
 
@@ -85,10 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ? `<div class="beat-item-price">${beat.status === 'sold' ? 'SOLD' : beat.price}</div>`
             : '';
 
-        const buyButtonHtml = (beat.status !== 'sold')
-            ? `<button class="btn buy-btn-green" onclick='checkoutWithStripe(${JSON.stringify(beat)})'>Αγορά</button>`
-            : `<button class="btn buy-btn-green" disabled>SOLD</button>`;
-
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
 
         item.innerHTML = `
@@ -98,8 +94,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="beat-item-category">${categoryName}</div>
             </div>
             ${priceHtml}
-            ${buyButtonHtml}
         `;
+
+        // --- BUY BUTTON ---
+        const buyBtn = document.createElement('button');
+        buyBtn.className = 'btn buy-btn-green';
+        buyBtn.textContent = (beat.status !== 'sold') ? 'Αγορά' : 'SOLD';
+        buyBtn.disabled = (beat.status === 'sold');
+
+        // Προσθήκη event listener αντί για inline onclick
+        if (beat.status !== 'sold') {
+            buyBtn.addEventListener('click', () => checkoutWithStripe(beat));
+        }
+
+        item.appendChild(buyBtn);
 
         // --- PLAY BTN
         item.querySelector('.beat-item-play-btn').addEventListener('click', () => handleTrackClick(beat));
