@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Stripe client με το Publishable Key
+    const stripe = Stripe("pk_live_51S0JjoLu6b81hM6KW6pHuQNGMh2sXTsyYw9iCt2Esw8Fr9BA41WLnaUEgvUmLbrzZKL0Fy5XNNp9Q3Eck3CBWyTk00WjPJIuo3");
+
     // --- CONFIGURATION & DOM ELEMENTS ---
     const a = {
         mainContent: document.getElementById('page-beats'),
@@ -43,6 +46,35 @@ document.addEventListener('DOMContentLoaded', () => {
     function showLoader() { if (a.loader) a.loader.style.display = 'flex'; }
     function hideLoader() { if (a.loader) a.loader.style.display = 'none'; }
 
+    // --- STRIPE CHECKOUT FUNCTION ---
+    async function checkoutWithStripe(beat) {
+        try {
+            const response = await fetch('/.netlify/functions/create-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    beatId: beat.id,
+                    title: beat.title,
+                    price: beat.priceRaw // ευρώ σε μορφή number
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.id) {
+                const result = await stripe.redirectToCheckout({ sessionId: data.id });
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            } else {
+                alert("Αποτυχία δημιουργίας checkout");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Σφάλμα κατά το Checkout");
+        }
+    }
+
     // --- BEAT ITEM CREATION ---
     function createBeatElement(beat) {
         const item = document.createElement('div');
@@ -54,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : '';
 
         const buyButtonHtml = (beat.status !== 'sold')
-            ? `<button class="btn buy-btn-green" onclick="window.location.href='${beat.checkoutUrl || '#'}'">Αγορά</button>`
+            ? `<button class="btn buy-btn-green" onclick='checkoutWithStripe(${JSON.stringify(beat)})'>Αγορά</button>`
             : `<button class="btn buy-btn-green" disabled>SOLD</button>`;
 
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
