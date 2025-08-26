@@ -5,37 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beat Store</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- ΑΥΤΟ ΕΙΝΑΙ ΑΠΑΡΑΙΤΗΤΟ ΓΙΑ ΤΟ ADMIN PANEL -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
+  <!-- Εδώ βάζουμε το περιεχόμενο από το παλιό σου index.html -->
+  <!-- Υποθέτω ότι είχες κάτι τέτοιο, προσάρμοσέ το αν χρειάζεται -->
   <header class="site-header">
-    <h1 class="logo">Beat Store</h1>
+    <h1>Beat Store</h1>
   </header>
 
-  <!-- 🔍 Αναζήτηση -->
-  <section class="search-bar">
-    <input 
-      type="text" 
-      id="searchInput" 
-      placeholder="Αναζήτησε με τίτλο, tags ή κατηγορία..." 
-    />
+  <section class="search-and-filters">
+    <input type="text" id="searchInput" placeholder="Αναζήτηση..." />
+    <div class="vibe-buttons-container">
+      <!-- Εδώ μπορείς να βάλεις τα κουμπιά για τα vibes/φίλτρα -->
+    </div>
   </section>
 
-  <!-- 🎶 Vibes / φίλτρα -->
-  <section class="filters">
-    <button class="vibe-button" data-vibe="all">Όλα</button>
-    <button class="vibe-button" data-vibe="trap">Trap / Drill</button>
-    <button class="vibe-button" data-vibe="latin">Latin Urban / Afro</button>
-    <button class="vibe-button" data-vibe="lofi">Lofi</button>
-    <button class="vibe-button" data-vibe="custom">Custom</button>
-  </section>
-
-  <!-- 📀 Beats -->
   <main>
-    <div id="beatsContainer" class="beats-container"></div>
+    <div id="beatsContainer">
+      <!-- Εδώ θα μπουν τα beats από το scripts.js -->
+    </div>
   </main>
 
   <footer class="site-footer">
-    <p>© 2025 BeatStore | All Rights Reserved</p>
+    <p>© 2025 BeatStore</p>
   </footer>
 
   <script src="scripts.js"></script>
