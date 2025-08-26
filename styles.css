@@ -268,23 +268,40 @@ body.modal-open {
 }
 .modal-close:hover { color: #fff; transform: scale(1.1); }
 
-/* --- Social Proof --- */
+/* --- Social Proof Modal --- */
 .social-proof-content {
     box-shadow: 0 0 25px rgba(126, 87, 194, 0.7);
-    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
 }
-#social-proof-icon { font-size: 2.5rem; color: #7e57c2; }
-#social-proof-icon i { animation: hourglass-turn 2s linear infinite; }
-@keyframes hourglass-turn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-#social-proof-confirm-btn {
-    background: transparent; border: 1px solid #4caf50; color: #4caf50;
-    padding: 0.7rem 1.5rem; border-radius: 50px; cursor: pointer;
-    font-weight: 700; width: 100%; transition: all 0.3s ease;
-}
-#social-proof-confirm-btn:hover { background: #4caf50; color: #fff; transform: scale(1.05); }
+
 #social-proof-viewers {
-    font-size: 0.9rem; color: #aaa; font-style: italic;
-    min-height: 1em; display: block;
+    font-size: 1rem;
+    color: #aaa;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+#social-proof-confirm-btn.confirm-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+#social-proof-confirm-btn.confirm-btn:hover {
+    background: #43a047;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
 }
 
 /* --- Vibe Modal --- */
@@ -321,6 +338,57 @@ body.modal-open {
 }
 #shuffle-vibes-btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(66, 165, 245, 0.9); }
 #shuffle-vibes-btn i { margin-right: 0.5rem; }
+
+/* --- Accordion Info Section --- */
+.info-accordion {
+    border-bottom: 1px solid #3a3a4a;
+    margin: 2rem 0;
+    background: none;
+    border-radius: 0;
+}
+.info-accordion[open] {
+    background: rgba(42, 42, 60, 0.3);
+    border-radius: 12px;
+    border: 1px solid #3a3a4a;
+    border-bottom: 1px solid #3a3a4a;
+}
+.info-accordion summary {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 0.2rem;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ccc;
+}
+.info-accordion summary::after {
+    content: '▼';
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+}
+.info-accordion[open] summary::after {
+    transform: rotate(180deg);
+}
+.info-accordion-content {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    color: #ccc;
+    line-height: 1.7;
+}
+.info-accordion-content h4 {
+    color: #fff;
+    border-bottom: 1px solid #4a4a5a;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+.info-accordion-content ul {
+    padding-left: 20px;
+    margin: 0;
+}
+.info-accordion-content li {
+    margin-bottom: 0.75rem;
+}
 
 /* --- Sticky Player (Glassmorphism) --- */
 #sticky-player {
