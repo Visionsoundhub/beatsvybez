@@ -1,128 +1,44 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VybezMadeThis - Vision Sound Hub</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;700&family=Segoe+UI:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="styles.css">
-
-    <!-- Netlify Identity Widget (για /admin login) -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beat Store</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header>
+    <h1>Beat Store</h1>
+  </header>
 
-<header class="site-header">
-    <img src="https://github.com/Visionsoundhub/vybezmadethis.beats/blob/main/vybezmadethisnewlogoheaderpng.png?raw=true" alt="VybezMadeThis Banner">
-</header>
+  <!-- 🔍 Αναζήτηση -->
+  <section class="search-section">
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Αναζήτηση με τίτλο ή είδος..." 
+    />
+  </section>
 
-<nav class="main-navigation">
-    <a href="https://visionsoundhub.gr/" class="nav-btn">Home</a>
-    <a href="https://services.visionsoundhub.gr/" class="nav-btn">Υπηρεσίες</a>
-    <a href="https://ourportfolio.visionsoundhub.gr/" class="nav-btn">Portfolio</a>
-    <a href="https://beats.visionsoundhub.gr/" class="nav-btn active">Beats</a>
-    <a href="https://creative.visionsoundhub.gr/" class="nav-btn">Vision Sound Hub</a>
-</nav>
+  <!-- 🎶 Vibes / κατηγορίες -->
+  <section class="vibes-section">
+    <button class="vibe-button" data-vibe="all">Όλα</button>
+    <button class="vibe-button" data-vibe="Trap / Drill">Trap / Drill</button>
+    <button class="vibe-button" data-vibe="Rap / Boombap">Rap / Boombap</button>
+    <button class="vibe-button" data-vibe="Latin Urban / Afro">Latin Urban / Afro</button>
+    <button class="vibe-button" data-vibe="Lofi">Lofi</button>
+    <button class="vibe-button" data-vibe="Custom">Custom</button>
+  </section>
 
-<main class="main-content" id="page-beats">
-    <h1 class="page-title">VybezMadeThis</h1>
+  <!-- 📀 Εκεί θα μπαίνουν τα beats -->
+  <main>
+    <div id="beatsContainer"></div>
+  </main>
 
-    <div class="vibe-search-promo">
-        <button id="vibe-search-btn">Vibe Search</button>
-        <p class="vibe-search-subtitle">Δεν ξέρεις τι ψάχνεις; Βρες το beat σου με βάση το vibe!</p>
-    </div>
-    <div class="top-bar">
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="...ή αναζήτησε με τίτλο / tag" aria-label="Αναζήτηση Beat">
-        </div>
-    </div>
+  <footer>
+    <p>© 2025 BeatStore</p>
+  </footer>
 
-    <div class="category-filter">
-        <button class="filter-btn active" data-category="all">Όλα</button>
-        <button class="filter-btn" data-category="trap">Trap / Drill</button>
-        <button class="filter-btn" data-category="boombap">Rap / Boombap</button>
-        <button class="filter-btn" data-category="latin">Latin Urban / Afro</button>
-        <button class="filter-btn" data-category="lofi">Lofi</button>
-        <button class="filter-btn" data-category="custom">Custom</button>
-        <button class="filter-btn" data-category="vault">Vault Beats</button>
-        <button class="filter-btn" data-category="ai">AI Access</button>
-    </div>
-
-    <details class="info-accordion" id="vault-info-accordion" style="display: none;">
-        <summary>Τι είναι τα Vault Beats;</summary>
-        <div class="info-accordion-content">
-            <ul>
-                <li><strong>Ανέφικτη Παράδοση Stems:</strong> Τα "Vault Beats" είναι παλαιότερες δημιουργίες των οποίων το αρχικό αρχείο παραγωγής (project file) δεν είναι πλέον διαθέσιμο. Αυτό καθιστά τεχνικά ανέφικτη την εξαγωγή των ξεχωριστών καναλιών (stems).</li>
-                <li><strong>Ειδική Τιμή & Προ-επεξεργασία:</strong> Ακριβώς επειδή δεν περιλαμβάνουν stems, τα beats αυτά έχουν περάσει από μια προσεκτική προεργασία μίξης και προσφέρονται σε σημαντικά χαμηλότερη τιμή.</li>
-                <li><strong>Βέλτιστη Ποιότητα για Ηχογράφηση:</strong> Παραδίδονται με -6db headroom, δίνοντας τον ιδανικό "χώρο" στον μηχανικό ήχου για να επεξεργαστεί τα φωνητικά σας και να πετύχει επαγγελματικό αποτέλεσμα.</li>
-            </ul>
-        </div>
-    </details>
-
-    <details class="info-accordion">
-        <summary>Χρήσιμες Πληροφορίες</summary>
-        <div class="info-accordion-content">
-            <h4>Όροι Χρήσης & Αδειοδότησης</h4>
-            <ul>
-                <li><strong>Αποκλειστική Άδεια Χρήσης (Exclusive License):</strong> Με κάθε αγορά (εκτός της κατηγορίας "AI Access"), αποκτάς μια αποκλειστική άδεια χρήσης.</li>
-                <li><strong>Δικαιώματα Δημιουργού:</strong> Η αγορά αφορά την άδεια χρήσης, <strong>όχι την ιδιοκτησία</strong> του beat. Ο δημιουργός (VybezMadeThis) διατηρεί τα πλήρη δικαιώματα.</li>
-                <li><strong>Producer Tag:</strong> Για λόγους marketing, το αρχείο περιέχει producer tag. Με stems μπορείς να το αφαιρέσεις.</li>
-                <li><strong>Stems (Κανάλια):</strong> Για stems υπάρχει χρέωση 20€.</li>
-            </ul>
-        </div>
-    </details>
-    
-    <div class="beat-list" id="beatList">
-        <div class="loader-container" style="display: none;"><div class="loader"></div></div>
-    </div>
-</main>
-
-<div id="sticky-player">
-    <div class="track-info"><p class="track-title" id="sticky-player-title">Επίλεξε ένα beat</p></div>
-    <div class="player-controls-wrapper">
-        <div class="custom-audio-player" id="main-player">
-            <button class="player-btn" id="prev-btn" aria-label="Προηγούμενο κομμάτι"><i class="fas fa-step-backward"></i></button>
-            <button class="play-pause-btn player-btn" aria-label="Αναπαραγωγή/Παύση"><i class="fas fa-play"></i></button>
-            <button class="player-btn" id="next-btn" aria-label="Επόμενο κομμάτι"><i class="fas fa-step-forward"></i></button>
-            <div class="progress-bar-container"><div class="progress-bar"></div></div>
-            <div class="time-display">0:00 / 0:00</div>
-        </div>
-    </div>
-    <audio id="main-audio-element" preload="metadata"></audio>
-</div>
-
-<footer class="site-footer">
-    <div class="footer-links">
-        <a href="mailto:studiovisionsound@gmail.com"><i class="fas fa-envelope"></i> Email</a>
-        <a href="https://www.instagram.com/visionsoundhub.gr" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
-        <a href="https://www.tiktok.com/@visionsoundhub" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
-    </div>
-    <p class="copyright-text">&copy; 2025 Vision Sound. All rights reserved.</p>
-</footer>
-
-<!-- Stripe JS Library -->
-<script src="https://js.stripe.com/v3/"></script>
-
-<!-- Το δικό σου JS -->
-<script src="scripts.js"></script>
-
-<!-- Netlify CMS auto-login redirect -->
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-  }
-</script>
-
+  <script src="scripts.js"></script>
 </body>
 </html>
