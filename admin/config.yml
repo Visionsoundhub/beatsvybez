@@ -19,3 +19,6 @@ collections:
           - { label: "Key", name: "key", widget: "string" }
           - { label: "Price", name: "price", widget: "number" }
           - { label: "Beat File", name: "file", widget: "file" }
+          - { label: "Tags", name: "tags", widget: "list", default: [] }
+          - { label: "Category", name: "category", widget: "select", options: ["trap", "boombap", "latin", "lofi", "custom", "vault", "ai"] }
+          - { label: "Status", name: "status", widget: "select", options: ["available", "sold"] }
