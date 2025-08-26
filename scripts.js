@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const purchaseLink = e.target.href;
 
                 if (a.socialProofViewers) {
-                    a.socialProofViewers.textContent = `${viewers} άλλοι βλέπουν αυτό το προϊόν`;
+                    a.socialProofViewers.textContent = `${viewers} άλλοι χρήστες βλέπουν τώρα αυτό το beat`;
                 }
                 if (a.socialProofConfirmBtn) {
                     a.socialProofConfirmBtn.dataset.link = purchaseLink;
