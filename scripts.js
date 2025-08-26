@@ -7,14 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
         mainAudio: document.getElementById('main-audio-element'),
         stickyPlayer: document.getElementById('sticky-player'),
         stickyPlayerTitle: document.getElementById('sticky-player-title'),
-        
+
         socialProofModal: document.getElementById('social-proof-modal'),
         socialProofViewers: document.getElementById('social-proof-viewers'),
         socialProofConfirmBtn: document.getElementById('social-proof-confirm-btn'),
         socialProofModalClose: document.getElementById('social-proof-modal-close'),
 
         categoryButtons: document.querySelectorAll('#page-beats .filter-btn'),
-        
+
         // --- ΝΕΟ ELEMENT ΓΙΑ ΤΟ VAULT ACCORDION ---
         vaultInfoAccordion: document.getElementById('vault-info-accordion'),
 
@@ -94,13 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!beatsResponse.ok || !vibesResponse.ok) {
                 throw new Error('Network response was not ok.');
             }
-            a.data.beats = await beatsResponse.json();
+
+            const beatsJson = await beatsResponse.json();
+            a.data.beats = beatsJson.beatslist || []; // <-- FIX για το CMS format
             a.data.vibes = await vibesResponse.json();
+
             initializeApp();
         } catch (error) {
             console.error('Failed to load data:', error);
             if (a.beatListEl) {
-               a.beatListEl.innerHTML = '<p style="color: #ff5555; text-align: center;">Αποτυχία φόρτωσης δεδομένων. Παρακαλώ δοκιμάστε ξανά.</p>';
+                a.beatListEl.innerHTML = '<p style="color: #ff5555; text-align: center;">Αποτυχία φόρτωσης δεδομένων. Παρακαλώ δοκιμάστε ξανά.</p>';
             }
         } finally {
             hideLoader();
@@ -110,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI & LOADER ---
     function showLoader() { if (a.loader) a.loader.style.display = 'flex'; }
     function hideLoader() { if (a.loader) a.loader.style.display = 'none'; }
-    
+
     // --- BEAT ITEM CREATION ---
     function createBeatElement(beat, isSingleView = false) {
         const item = document.createElement('div');
@@ -124,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const buyButtonHtml = (beat.checkoutUrl && beat.status !== 'sold')
             ? `<a href="${beat.checkoutUrl}" class="btn buy-btn-green" target="_blank" data-beat-id-social="${beat.id}">Αγορά</a>`
             : `<button class="btn buy-btn-green" disabled>${beat.status === 'sold' ? 'SOLD' : 'Αγορά'}</button>`;
-        
+
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
         const titleAndCategoryHtml = `
             <div class="beat-item-title-wrapper">
@@ -140,10 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn share-btn" aria-label="Κοινοποίηση ${beat.title}"><i class="fas fa-share-alt"></i></button>
             ${buyButtonHtml}
         `;
-        
+
         item.querySelector('.beat-item-play-btn').addEventListener('click', () => handleTracklistClick(playlistIndex, playlist));
         item.querySelector('.share-btn')?.addEventListener('click', (e) => { e.stopPropagation(); shareBeat(beat); });
-        
+
         const buyBtn = item.querySelector('.buy-btn-green');
         if (buyBtn && !buyBtn.disabled) {
             buyBtn.addEventListener('click', function(e) {
@@ -155,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (a.socialProofViewers) {
                     a.socialProofViewers.textContent = viewers > 0 ? `${viewers} άλλοι βλέπουν αυτό το προϊόν` : '';
                 }
-                
+
                 if (a.socialProofConfirmBtn) {
                     a.socialProofConfirmBtn.dataset.link = purchaseLink;
                 }
@@ -164,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         return item;
     }
 
@@ -177,21 +180,21 @@ document.addEventListener('DOMContentLoaded', () => {
             let filteredBeats = a.data.beats;
 
             if (filter.type === 'category') {
-                filteredBeats = filter.value === 'all' 
-                    ? a.data.beats.filter(b => b.category !== 'ai' && b.category !== 'custom') 
+                filteredBeats = filter.value === 'all'
+                    ? a.data.beats.filter(b => b.category !== 'ai' && b.category !== 'custom')
                     : a.data.beats.filter(b => b.category === filter.value);
             } else if (filter.type === 'search') {
                 const term = filter.value.toLowerCase();
-                filteredBeats = a.data.beats.filter(b => 
-                    b.title.toLowerCase().includes(term) || 
+                filteredBeats = a.data.beats.filter(b =>
+                    b.title.toLowerCase().includes(term) ||
                     (b.tags && b.tags.some(t => t.toLowerCase().includes(term)))
                 );
             } else if (filter.type === 'vibe') {
-                filteredBeats = a.data.beats.filter(b => 
+                filteredBeats = a.data.beats.filter(b =>
                     (b.tags && b.tags.some(t => filter.value.includes(t)))
                 );
             }
-            
+
             a.state.currentPlaylist = filteredBeats;
 
             if (filteredBeats.length === 0) {
@@ -206,19 +209,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     a.beatListEl.appendChild(beatElement);
                 });
             }
-            
+
             updatePlayingUI();
             hideLoader();
         }, 50);
     }
-    
+
     function renderSingleBeatView(beat) {
         showLoader();
         setTimeout(() => {
             if (!a.mainContent || !a.beatListEl) return;
             a.mainContent.classList.add('single-beat-view');
             a.beatListEl.innerHTML = '';
-            
+
             const backButton = document.createElement('a');
             backButton.href = window.location.pathname;
             backButton.className = 'back-to-all-btn';
@@ -295,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             catch (err) { alert('Η αντιγραφή απέτυχε.'); }
         }
     }
-    
+
     // --- VIBE SEARCH LOGIC ---
     function displayRandomVibes() {
         if (!a.vibeBubblesContainer) return;
@@ -334,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
         a.vibeModal.classList.remove('visible');
         document.body.classList.remove('modal-open');
     }
-    
+
     // --- VIBE VISUALIZER ---
     function resizeVibeCanvas() {
         if (!a.vibeCanvas) return;
@@ -379,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.classList.add('active');
                     const cat = button.dataset.category;
                     if(a.searchInput) a.searchInput.value = '';
-                    
+
                     // --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΕΜΦΑΝΙΣΗ ΤΩΝ INFO BOXES & VAULT ACCORDION ---
                     Object.values(a.infoBoxes).forEach(box => { if (box) box.style.display = 'none'; });
                     if (a.vaultInfoAccordion) {
@@ -395,14 +398,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (a.infoBoxes.general) {
                         a.infoBoxes.general.style.display = 'block';
                     }
-                    
+
                     renderFullBeatListView({ type: 'category', value: cat });
                 });
             });
             if(a.searchInput) a.searchInput.addEventListener('input', () => {
                 a.categoryButtons.forEach(btn => btn.classList.remove('active'));
                 Object.values(a.infoBoxes).forEach(box => { if (box) box.style.display = 'none'; });
-                if (a.vaultInfoAccordion) a.vaultInfoAccordion.style.display = 'none'; // Απόκρυψη και στην αναζήτηση
+                if (a.vaultInfoAccordion) a.vaultInfoAccordion.style.display = 'none';
                 if (a.infoBoxes.general) a.infoBoxes.general.style.display = 'block';
                 renderFullBeatListView({ type: 'search', value: a.searchInput.value });
             });
@@ -425,13 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if(a.player.progressBarContainer) a.player.progressBarContainer.addEventListener('click', e => { if (a.mainAudio && a.mainAudio.duration) a.mainAudio.currentTime = (e.offsetX/a.player.progressBarContainer.clientWidth)*a.mainAudio.duration; });
-        
+
         // Vibe Modal Listeners
         if(a.vibeBtn) a.vibeBtn.addEventListener('click', openVibeModal);
         if(a.vibeModalClose) a.vibeModalClose.addEventListener('click', closeVibeModal);
         if(a.vibeModal) a.vibeModal.addEventListener('click', e => { if (e.target === a.vibeModal) closeVibeModal(); });
         if(a.shuffleVibesBtn) a.shuffleVibesBtn.addEventListener('click', displayRandomVibes);
-        
+
         // Social Proof Modal Listeners
         if(a.socialProofConfirmBtn) {
             a.socialProofConfirmBtn.addEventListener('click', function() {
@@ -450,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.target === a.socialProofModal) a.socialProofModal.classList.remove('visible');
             });
         }
-        
+
         window.addEventListener('resize', resizeVibeCanvas);
     }
 
