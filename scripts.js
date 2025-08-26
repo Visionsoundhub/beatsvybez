@@ -1,43 +1,80 @@
-<!DOCTYPE html>
-<html lang="el">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beat Store</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="site-header">
-    <h1 class="logo">Beat Store</h1>
-  </header>
+document.addEventListener("DOMContentLoaded", () => {
+  const beatsContainer = document.getElementById("beatsContainer");
+  const searchInput = document.getElementById("searchInput");
+  const vibeButtons = document.querySelectorAll(".vibe-button");
 
-  <!-- 🔍 Αναζήτηση -->
-  <section class="search-bar">
-    <input 
-      type="text" 
-      id="searchInput" 
-      placeholder="Αναζήτησε με τίτλο, tags ή κατηγορία..." 
-    />
-  </section>
+  let allBeats = [];
 
-  <!-- 🎶 Vibes / φίλτρα -->
-  <section class="filters">
-    <button class="vibe-button" data-vibe="all">Όλα</button>
-    <button class="vibe-button" data-vibe="trap">Trap / Drill</button>
-    <button class="vibe-button" data-vibe="latin">Latin Urban / Afro</button>
-    <button class="vibe-button" data-vibe="lofi">Lofi</button>
-    <button class="vibe-button" data-vibe="custom">Custom</button>
-  </section>
+  // Φόρτωση beats από beats.json
+  fetch("beats.json")
+    .then(res => res.json())
+    .then(data => {
+      allBeats = data.beatslist;
+      renderBeats(allBeats);
+    })
+    .catch(err => console.error("Error loading beats:", err));
 
-  <!-- 📀 Beats -->
-  <main>
-    <div id="beatsContainer" class="beats-container"></div>
-  </main>
+  function renderBeats(list) {
+    beatsContainer.innerHTML = "";
+    list.forEach((beat) => {
+      const tags = beat.tags ? beat.tags.join(", ") : "";
 
-  <footer class="site-footer">
-    <p>© 2025 BeatStore | All Rights Reserved</p>
-  </footer>
+      const beatCard = document.createElement("div");
+      beatCard.classList.add("beat-card");
 
-  <script src="scripts.js"></script>
-</body>
-</html>
+      beatCard.innerHTML = `
+        <div class="beat-info">
+          <h3 class="beat-title">${beat.title}</h3> 
+          <p class="beat-meta"><strong>Κατηγορία:</strong> ${beat.category || "-"}</p>
+          ${tags ? `<p class="beat-tags"><strong>Tags:</strong> ${tags}</p>` : ""}
+          ${beat.bpm ? `<p><strong>BPM:</strong> ${beat.bpm}</p>` : ""}
+          ${beat.key ? `<p><strong>Key:</strong> ${beat.key}</p>` : ""}
+        </div>
+        <div class="beat-actions">
+          <audio controls src="${beat.audioSrc}" class="player"></audio>
+          <div class="buy-box">
+            <span class="price">${beat.price}</span>
+            <button class="buy-button">Αγορά</button>
+          </div>
+        </div>
+      `;
+
+      beatCard.querySelector(".buy-button").addEventListener("click", () => {
+        if (beat.checkoutUrl) {
+          window.open(beat.checkoutUrl, "_blank");
+        } else {
+          alert(`Επικοινώνησε για αγορά: ${beat.title}`);
+        }
+      });
+
+      beatsContainer.appendChild(beatCard);
+    });
+  }
+
+  // 🔍 Αναζήτηση
+  searchInput.addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allBeats.filter(
+      (b) =>
+        b.title.toLowerCase().includes(term) ||
+        b.category.toLowerCase().includes(term) ||
+        (b.tags && b.tags.some(t => t.toLowerCase().includes(term)))
+    );
+    renderBeats(filtered);
+  });
+
+  // 🎚️ Φίλτρα
+  vibeButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const vibe = btn.dataset.vibe;
+      if (vibe === "all") {
+        renderBeats(allBeats);
+      } else {
+        const filtered = allBeats.filter(
+          (b) => b.category.toLowerCase() === vibe
+        );
+        renderBeats(filtered);
+      }
+    });
+  });
+});
