@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beat Store</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- ΑΥΤΟ ΕΙΝΑΙ ΑΠΑΡΑΙΤΗΤΟ ΓΙΑ ΤΟ ADMIN PANEL -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΜΟΝΟ ΠΟΥ ΧΡΕΙΑΖΕΤΑΙ ΓΙΑ ΤΟ ADMIN -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <!-- Εδώ βάζουμε το περιεχόμενο από το παλιό σου index.html -->
-  <!-- Υποθέτω ότι είχες κάτι τέτοιο, προσάρμοσέ το αν χρειάζεται -->
-  <header class="site-header">
-    <h1>Beat Store</h1>
-  </header>
+    <header>
+        <!-- Το header σου, όπως ήταν -->
+    </header>
 
-  <section class="search-and-filters">
-    <input type="text" id="searchInput" placeholder="Αναζήτηση..." />
-    <div class="vibe-buttons-container">
-      <!-- Εδώ μπορείς να βάλεις τα κουμπιά για τα vibes/φίλτρα -->
-    </div>
-  </section>
+    <main>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Αναζήτηση...">
+        </div>
+        <div class="vibes-container">
+            <!-- Τα κουμπιά για τα vibes, όπως τα είχες -->
+        </div>
+        <div id="beatsContainer" class="beats-grid">
+            <!-- Εδώ θα μπουν τα beats -->
+        </div>
+    </main>
 
-  <main>
-    <div id="beatsContainer">
-      <!-- Εδώ θα μπουν τα beats από το scripts.js -->
-    </div>
-  </main>
+    <footer>
+        <!-- Το footer σου, όπως ήταν -->
+    </footer>
 
-  <footer class="site-footer">
-    <p>© 2025 BeatStore</p>
-  </footer>
-
-  <script src="scripts.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
