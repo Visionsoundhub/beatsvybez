@@ -1,4 +1,12 @@
 {
+  "price": 79,
+  "status": "available",
+  "title": "grenzenlos",
+  "tags": [
+    "afrotrap",
+    "trap",
+    "club"
+  ],
   "beatslist": [
     {
       "id": 1752261082877,
@@ -7,8 +15,16 @@
       "price": "79.99",
       "status": "available",
       "category": "latin",
-      "tags": ["love", "party", "upbeat"],
+      "tags": [
+        "love",
+        "party",
+        "upbeat"
+      ],
       "checkoutUrl": "https://payhip.com/b/fSD16"
     }
-  ]
+  ],
+  "file": "/uploads/grenzenlos-tagged.mp3",
+  "category": "trap",
+  "bpm": 135,
+  "key": "fm"
 }
