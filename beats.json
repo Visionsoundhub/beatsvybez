@@ -4,7 +4,8 @@
       "id": 1752261082877,
       "title": "Late Hours",
       "audioSrc": "https://latinurbanafro.netlify.app/audio/laterhours-reggaeton.mp3",
-      "price": 79.99,
+      "price": "79.99 €",
+      "priceRaw": 79.99,
       "status": "available",
       "category": "latin",
       "tags": [
@@ -15,17 +16,18 @@
       "checkoutUrl": "https://payhip.com/b/fSD16"
     },
     {
-      "price": 79.99,
-      "audioSrc": "/uploads/grenzenlos-tagged.mp3",
-      "status": "available",
+      "id": 1,
       "title": "Grenzenlos",
+      "audioSrc": "/uploads/grenzenlos-tagged.mp3",
+      "price": "79.99 €",
+      "priceRaw": 79.99,
+      "status": "available",
+      "category": "trap",
       "tags": [
         "club",
         "trap",
         "afrotrap"
       ],
-      "id": 1,
-      "category": "trap",
       "bpm": 135,
       "key": "Fm"
     }
