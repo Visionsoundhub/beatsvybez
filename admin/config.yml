@@ -8,12 +8,11 @@ public_folder: "/uploads"
 collections:
   - name: "beats"
     label: "Beats"
-    label_singular: "Beat"
     description: "Upload and manage your beats"
     file: "beats.json"
     fields:
-      - { name: "title", label: "Title", widget: "string" }
-      - { name: "bpm", label: "BPM", widget: "number" }
-      - { name: "key", label: "Key", widget: "string" }
-      - { name: "price", label: "Price", widget: "number" }
-      - { name: "file", label: "Beat File", widget: "file" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "BPM", name: "bpm", widget: "number" }
+      - { label: "Key", name: "key", widget: "string" }
+      - { label: "Price", name: "price", widget: "number" }
+      - { label: "Beat File", name: "file", widget: "file" }
