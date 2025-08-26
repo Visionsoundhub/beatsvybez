@@ -22,7 +22,7 @@ collections:
               - { label: "Title", name: "title", widget: "string" }
               - { label: "BPM", name: "bpm", widget: "number", required: false }
               - { label: "Key", name: "key", widget: "string", required: false }
-              - { label: "Price", name: "price", widget: "number" }
+              - { label: "Price", name: "price", widget: "number", value_type: "float", step: 0.01 }
               - { label: "Audio File", name: "audioSrc", widget: "file", allow_multiple: false, media_folder: "uploads", public_folder: "/uploads" }
               - { label: "Tags", name: "tags", widget: "list", default: [] }
               - { label: "Category", name: "category", widget: "select", options: ["trap", "boombap", "latin", "lofi", "custom", "vault", "ai"] }
