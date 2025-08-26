@@ -1,70 +1,67 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const beatsContainer = document.getElementById("beatsContainer");
-  const searchInput = document.getElementById("searchInput");
+document.addEventListener('DOMContentLoaded', () => {
+    const beatsContainer = document.getElementById('beatsContainer');
+    const searchInput = document.getElementById('searchInput');
 
-  let allBeats = [];
+    let allBeats = [];
 
-  // Φόρτωση beats από το beats.json
-  fetch("beats.json")
-    .then(res => res.json())
-    .then(data => {
-      // Το Admin αποθηκεύει τα beats στο "beatslist"
-      allBeats = data.beatslist || []; 
-      renderBeats(allBeats);
-    })
-    .catch(err => {
-      console.error("Δεν μπόρεσα να φορτώσω το beats.json:", err);
-      beatsContainer.innerHTML = "<p>Σφάλμα κατά τη φόρτωση των beats.</p>";
-    });
+    fetch('beats.json')
+        .then(response => response.json())
+        .then(data => {
+            allBeats = data.beatslist || [];
+            renderBeats(allBeats);
+        })
+        .catch(error => {
+            console.error('Error fetching beats:', error);
+            beatsContainer.innerHTML = '<p>Error loading beats. Please try again later.</p>';
+        });
 
-  function renderBeats(list) {
-    beatsContainer.innerHTML = "";
-    if (!list || list.length === 0) {
-      beatsContainer.innerHTML = "<p>Δεν υπάρχουν διαθέσιμα beats αυτή τη στιγμή.</p>";
-      return;
+    function renderBeats(beatsToRender) {
+        beatsContainer.innerHTML = '';
+        if (beatsToRender.length === 0) {
+            beatsContainer.innerHTML = '<p>No beats found.</p>';
+            return;
+        }
+
+        beatsToRender.forEach(beat => {
+            const beatCard = document.createElement('div');
+            beatCard.className = 'beat-card'; // Χρησιμοποιεί την κλάση από το CSS σου
+
+            beatCard.innerHTML = `
+                <div class="beat-info">
+                    <h3>${beat.title}</h3>
+                    <p>Category: ${beat.category || 'N/A'}</p>
+                </div>
+                <div class="beat-player">
+                    <audio controls src="${beat.audioSrc}"></audio>
+                </div>
+                <div class="beat-actions">
+                    <span class="price">${beat.price}</span>
+                    <button class="buy-button">Αγορά</button>
+                </div>
+            `;
+
+            const buyButton = beatCard.querySelector('.buy-button');
+            if (beat.checkoutUrl) {
+                buyButton.addEventListener('click', () => {
+                    window.open(beat.checkoutUrl, '_blank');
+                });
+            } else {
+                buyButton.disabled = true;
+                buyButton.textContent = 'Μη Διαθέσιμο';
+            }
+
+            beatsContainer.appendChild(beatCard);
+        });
     }
 
-    list.forEach((beat) => {
-      // Δημιουργούμε το HTML για κάθε beat, χρησιμοποιώντας τις κλάσεις από το styles.css σου
-      const beatCard = document.createElement("div");
-      beatCard.className = "beat-card"; // Υποθέτω ότι έχεις μια τέτοια κλάση
-
-      beatCard.innerHTML = `
-        <div class="beat-info">
-          <h3>${beat.title}</h3>
-          <p>Κατηγορία: ${beat.category || 'N/A'}</p>
-        </div>
-        <div class="beat-player">
-          <audio controls src="${beat.audioSrc}"></audio>
-        </div>
-        <div class="beat-actions">
-          <span class="price">${beat.price}</span>
-          <button class="buy-button">Αγορά</button>
-        </div>
-      `;
-
-      // Λειτουργία κουμπιού "Αγορά"
-      beatCard.querySelector(".buy-button").addEventListener("click", () => {
-        if (beat.checkoutUrl) {
-          window.open(beat.checkoutUrl, "_blank");
-        } else {
-          alert("Για αγορά, επικοινωνήστε μαζί μας.");
-        }
-      });
-
-      beatsContainer.appendChild(beatCard);
-    });
-  }
-
-  // Λειτουργία αναζήτησης
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      const term = e.target.value.toLowerCase();
-      const filtered = allBeats.filter(b => 
-        b.title.toLowerCase().includes(term) ||
-        (b.category && b.category.toLowerCase().includes(term))
-      );
-      renderBeats(filtered);
-    });
-  }
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredBeats = allBeats.filter(beat =>
+                beat.title.toLowerCase().includes(searchTerm) ||
+                (beat.category && beat.category.toLowerCase().includes(searchTerm))
+            );
+            renderBeats(filteredBeats);
+        });
+    }
 });
