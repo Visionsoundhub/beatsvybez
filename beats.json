@@ -1,24 +1,17 @@
 {
   "beatslist": [
     {
-      "id": 1,
-      "title": "Grenzenlos",
-      "audioSrc": "/uploads/grenzenlos-tagged.mp3",
-      "price": 79,
-      "status": "available",
-      "tags": ["afrotrap", "trap", "club"],
-      "category": "trap",
-      "bpm": 135,
-      "key": "fm"
-    },
-    {
       "id": 1752261082877,
       "title": "Late Hours",
       "audioSrc": "https://latinurbanafro.netlify.app/audio/laterhours-reggaeton.mp3",
       "price": 79.99,
       "status": "available",
       "category": "latin",
-      "tags": ["love", "party", "upbeat"],
+      "tags": [
+        "love",
+        "party",
+        "upbeat"
+      ],
       "checkoutUrl": "https://payhip.com/b/fSD16"
     }
   ]
