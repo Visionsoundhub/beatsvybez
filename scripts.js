@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- STRIPE FRONTEND CONFIG ---
-    const stripe = Stripe("pk_live_51S0JjoLu6b81hM6KW6pHuQNGMh2sXTsyYw9iCt2Esw8Fr9BA41WLnaUEgvUmLbrzZKL0Fy5XNNp9Q3Eck3CBWyTk00WjPJIuo3");
-
     // --- CONFIGURATION & DOM ELEMENTS ---
     const a = {
         mainContent: document.getElementById('page-beats'),
@@ -10,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mainAudio: document.getElementById('main-audio-element'),
         stickyPlayer: document.getElementById('sticky-player'),
         stickyPlayerTitle: document.getElementById('sticky-player-title'),
-        categoryButtons: document.querySelectorAll('#page-beats .filter-btn'),
         loader: document.querySelector('.loader-container'),
         data: { beats: [] },
         state: { currentPlaylist: [], currentTrackIndex: -1 },
@@ -54,13 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         item.dataset.beatId = beat.id;
 
         const priceHtml = beat.price
-            ? `<div class="beat-item-price ${beat.status === 'sold' ? 'sold' : ''}">
-                ${beat.status === 'sold' ? 'SOLD' : beat.price}
-               </div>`
+            ? `<div class="beat-item-price">${beat.status === 'sold' ? 'SOLD' : beat.price}</div>`
             : '';
 
         const buyButtonHtml = (beat.status !== 'sold')
-            ? `<button class="btn buy-btn-green" data-beat-id="${beat.id}" data-price="${beat.priceRaw}">Αγορά</button>`
+            ? `<button class="btn buy-btn-green" onclick="window.location.href='${beat.checkoutUrl || '#'}'">Αγορά</button>`
             : `<button class="btn buy-btn-green" disabled>SOLD</button>`;
 
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
@@ -77,33 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- PLAY BTN
         item.querySelector('.beat-item-play-btn').addEventListener('click', () => handleTrackClick(beat));
-
-        // --- BUY BTN (Stripe) ---
-        const buyBtn = item.querySelector('.buy-btn-green');
-        if (buyBtn && !buyBtn.disabled) {
-            buyBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                const beatId = this.dataset.beatId;
-                const price = parseFloat(this.dataset.price);
-
-                try {
-                    const response = await fetch('/.netlify/functions/create-checkout', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ beatId, price })
-                    });
-                    const session = await response.json();
-                    if (session.id) {
-                        await stripe.redirectToCheckout({ sessionId: session.id });
-                    } else {
-                        alert("Σφάλμα στο checkout");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("Αποτυχία Stripe checkout");
-                }
-            });
-        }
 
         return item;
     }
