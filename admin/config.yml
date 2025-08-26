@@ -9,16 +9,19 @@ collections:
   - name: "beats"
     label: "Beats"
     description: "Upload and manage your beats"
-    files:
-      - file: "beats.json"
-        label: "Beats List"
+    file: "beats.json"
+    fields:
+      - label: "Beats List"
         name: "beatslist"
+        widget: "list"
         fields:
+          - { label: "ID", name: "id", widget: "number" }
           - { label: "Title", name: "title", widget: "string" }
-          - { label: "BPM", name: "bpm", widget: "number" }
-          - { label: "Key", name: "key", widget: "string" }
+          - { label: "BPM", name: "bpm", widget: "number", required: false }
+          - { label: "Key", name: "key", widget: "string", required: false }
           - { label: "Price", name: "price", widget: "number" }
-          - { label: "Beat File", name: "file", widget: "file" }
+          - { label: "Audio File", name: "audioSrc", widget: "file", allow_multiple: false, media_folder: "uploads", public_folder: "/uploads" }
           - { label: "Tags", name: "tags", widget: "list", default: [] }
           - { label: "Category", name: "category", widget: "select", options: ["trap", "boombap", "latin", "lofi", "custom", "vault", "ai"] }
-          - { label: "Status", name: "status", widget: "select", options: ["available", "sold"] }
+          - { label: "Status", name: "status", widget: "select", options: ["available", "sold"], default: "available" }
+          - { label: "Checkout URL", name: "checkoutUrl", widget: "string", required: false }
