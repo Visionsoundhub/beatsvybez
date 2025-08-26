@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return storedData.count;
             }
         } catch (e) {}
-        const newCount = Math.floor(Math.random() * 4);
+        // Πάντα τουλάχιστον 1 (για να μην λέει "0")
+        const newCount = Math.floor(Math.random() * 3) + 1; 
         const newData = { count: newCount, timestamp: now };
         localStorage.setItem(key, JSON.stringify(newData));
         return newCount;
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Network response was not ok.');
             }
 
-            // ✅ ΕΔΩ η αλλαγή
+            // ✅ Eδώ η αλλαγή για beatslist
             const beatsData = await beatsResponse.json();
             a.data.beats = beatsData.beatslist || []; 
 
@@ -120,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const priceHtml = beat.price ? `<div class="beat-item-price ${beat.status === 'sold' ? 'sold' : ''}">${beat.status === 'sold' ? 'SOLD' : beat.price}</div>` : '';
         const buyButtonHtml = (beat.checkoutUrl && beat.status !== 'sold')
-            ? `<a href="${beat.checkoutUrl}" class="btn buy-btn-green" target="_blank" data-beat-id-social="${beat.id}">Αγορά</a>`
+            ? `<a href="${beat.checkoutUrl}" class="btn buy-btn-green" data-beat-id-social="${beat.id}">Αγορά</a>`
             : `<button class="btn buy-btn-green" disabled>${beat.status === 'sold' ? 'SOLD' : 'Αγορά'}</button>`;
 
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
@@ -266,6 +267,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- SOCIAL PROOF HANDLERS ---
+    function setupSocialProofHandlers() {
+        // Buy button click
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('[data-beat-id-social]')) {
+                e.preventDefault();
+                const beatId = e.target.dataset.beatIdSocial;
+                const viewers = getViewerCount(beatId);
+                const purchaseLink = e.target.href;
+
+                if (a.socialProofViewers) {
+                    a.socialProofViewers.textContent = `${viewers} άλλοι βλέπουν αυτό το προϊόν`;
+                }
+                if (a.socialProofConfirmBtn) {
+                    a.socialProofConfirmBtn.dataset.link = purchaseLink;
+                }
+                if (a.socialProofModal) {
+                    a.socialProofModal.classList.add('visible');
+                    document.body.classList.add('modal-open');
+                }
+            }
+        });
+
+        // Confirm → ανοίγει checkout
+        if (a.socialProofConfirmBtn) {
+            a.socialProofConfirmBtn.addEventListener('click', function() {
+                const link = this.dataset.link;
+                if (link) {
+                    window.open(link, '_blank');
+                }
+                if (a.socialProofModal) {
+                    a.socialProofModal.classList.remove('visible');
+                    document.body.classList.remove('modal-open');
+                }
+            });
+        }
+
+        // Close button
+        if (a.socialProofModalClose) {
+            a.socialProofModalClose.addEventListener('click', function() {
+                if (a.socialProofModal) {
+                    a.socialProofModal.classList.remove('visible');
+                    document.body.classList.remove('modal-open');
+                }
+            });
+        }
+
+        // Click outside
+        if (a.socialProofModal) {
+            a.socialProofModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('visible');
+                    document.body.classList.remove('modal-open');
+                }
+            });
+        }
+    }
+
     // --- INITIALIZATION ---
     function initializeApp() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -280,5 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Run init
+    setupSocialProofHandlers();
     loadData();
 });
