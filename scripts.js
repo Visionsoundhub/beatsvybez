@@ -19,28 +19,36 @@ document.addEventListener("DOMContentLoaded", () => {
     list.forEach((beat) => {
       const beatCard = document.createElement("div");
       beatCard.classList.add("beat-card");
+
+      // Tags formatting
+      const tags = beat.tags ? beat.tags.join(", ") : "";
+
       beatCard.innerHTML = `
         <div class="beat-info">
           <h3>${beat.title}</h3>
-          <p>${beat.genre}</p>
+          <p><strong>Κατηγορία:</strong> ${beat.category || "N/A"}</p>
+          ${tags ? `<p><strong>Tags:</strong> ${tags}</p>` : ""}
+          ${beat.bpm ? `<p><strong>BPM:</strong> ${beat.bpm}</p>` : ""}
+          ${beat.key ? `<p><strong>Key:</strong> ${beat.key}</p>` : ""}
         </div>
         <div class="beat-actions">
+          <audio controls src="${beat.audioSrc}"></audio>
           <span class="price">${beat.price}</span>
           <button class="buy-button">Αγορά</button>
         </div>
       `;
-      beatCard
-        .querySelector(".buy-button")
-        .addEventListener("click", () => handleBuy(beat));
+      
+      // Buy button event
+      beatCard.querySelector(".buy-button").addEventListener("click", () => {
+        if (beat.checkoutUrl) {
+          window.open(beat.checkoutUrl, "_blank"); // redirect σε Payhip / link
+        } else {
+          alert(`Για αγορά του beat "${beat.title}" επικοινώνησε μαζί μας!`);
+        }
+      });
+
       beatsContainer.appendChild(beatCard);
     });
-  }
-
-  function handleBuy(beat) {
-    // Αυτή τη στιγμή απλά δείχνει μήνυμα – εδώ μπορείς να βάλεις PayPal / Email link
-    alert(`Για αγορά του beat "${beat.title}" επικοινώνησε μαζί μας!`);
-    // ή redirect:
-    // window.location.href = "mailto:yourmail@example.com?subject=Αγορά beat: " + beat.title;
   }
 
   // ✅ Αναζήτηση
@@ -49,12 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtered = allBeats.filter(
       (b) =>
         b.title.toLowerCase().includes(term) ||
-        b.genre.toLowerCase().includes(term)
+        b.category.toLowerCase().includes(term) ||
+        (b.tags && b.tags.some(t => t.toLowerCase().includes(term)))
     );
     renderBeats(filtered);
   });
 
-  // ✅ Filter buttons με Tag
+  // ✅ Filter buttons
   vibeButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const vibe = btn.dataset.vibe;
@@ -62,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBeats(allBeats);
       } else {
         const filtered = allBeats.filter(
-          (b) => b.genre.toLowerCase() === vibe.toLowerCase()
+          (b) => b.category.toLowerCase() === vibe.toLowerCase()
         );
         renderBeats(filtered);
       }
