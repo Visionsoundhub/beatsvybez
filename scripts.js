@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- STRIPE FRONTEND CONFIG ---
+    const stripe = Stripe("pk_live_51S0JjoLu6b81hM6KW6pHuQNGMh2sXTsyYw9iCt2Esw8Fr9BA41WLnaUEgvUmLbrzZKL0Fy5XNNp9Q3Eck3CBWyTk00WjPJIuo3");
+
     // --- CONFIGURATION & DOM ELEMENTS ---
     const a = {
         mainContent: document.getElementById('page-beats'),
@@ -15,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         categoryButtons: document.querySelectorAll('#page-beats .filter-btn'),
 
-        // --- ΝΕΟ ELEMENT ΓΙΑ ΤΟ VAULT ACCORDION ---
         vaultInfoAccordion: document.getElementById('vault-info-accordion'),
 
         infoBoxes: {
@@ -71,14 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (storedData && (now - storedData.timestamp < 20 * 1000)) {
                 return storedData.count;
             }
-        } catch (e) {
-            console.error("Could not parse viewer count from localStorage", e);
-        }
+        } catch (e) {}
         const newCount = Math.floor(Math.random() * 4);
-        const newData = {
-            count: newCount,
-            timestamp: now
-        };
+        const newData = { count: newCount, timestamp: now };
         localStorage.setItem(key, JSON.stringify(newData));
         return newCount;
     }
@@ -91,26 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch('beats.json?v=' + Date.now()),
                 fetch('vibes.json?v=' + Date.now())
             ]);
-            if (!beatsResponse.ok || !vibesResponse.ok) {
-                throw new Error('Network response was not ok.');
-            }
+            if (!beatsResponse.ok || !vibesResponse.ok) throw new Error('Network problem');
 
             const beatsJson = await beatsResponse.json();
-            a.data.beats = beatsJson.beatslist || []; // <-- FIX για το CMS format
+            a.data.beats = beatsJson.beatslist || [];
             a.data.vibes = await vibesResponse.json();
 
             initializeApp();
         } catch (error) {
             console.error('Failed to load data:', error);
             if (a.beatListEl) {
-                a.beatListEl.innerHTML = '<p style="color: #ff5555; text-align: center;">Αποτυχία φόρτωσης δεδομένων. Παρακαλώ δοκιμάστε ξανά.</p>';
+                a.beatListEl.innerHTML = '<p style="color:#ff5555;text-align:center;">Αποτυχία φόρτωσης δεδομένων. Δοκιμάστε ξανά.</p>';
             }
         } finally {
             hideLoader();
         }
     }
 
-    // --- UI & LOADER ---
     function showLoader() { if (a.loader) a.loader.style.display = 'flex'; }
     function hideLoader() { if (a.loader) a.loader.style.display = 'none'; }
 
@@ -123,47 +117,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const playlist = isSingleView ? [beat] : a.state.currentPlaylist;
         const playlistIndex = playlist.findIndex(b => b.id === beat.id);
 
-        const priceHtml = beat.price ? `<div class="beat-item-price ${beat.status === 'sold' ? 'sold' : ''}">${beat.status === 'sold' ? 'SOLD' : beat.price}</div>` : '';
-        const buyButtonHtml = (beat.checkoutUrl && beat.status !== 'sold')
-            ? `<a href="${beat.checkoutUrl}" class="btn buy-btn-green" target="_blank" data-beat-id-social="${beat.id}">Αγορά</a>`
-            : `<button class="btn buy-btn-green" disabled>${beat.status === 'sold' ? 'SOLD' : 'Αγορά'}</button>`;
+        const priceHtml = beat.price 
+            ? `<div class="beat-item-price ${beat.status === 'sold' ? 'sold' : ''}">${beat.status === 'sold' ? 'SOLD' : beat.price}</div>` 
+            : '';
+
+        const buyButtonHtml = (beat.status !== 'sold')
+            ? `<button class="btn buy-btn-green" data-beat-id="${beat.id}" data-price="${beat.priceRaw || 89.99}">Αγορά</button>`
+            : `<button class="btn buy-btn-green" disabled>SOLD</button>`;
 
         const categoryName = a.categoryDisplayNames[beat.category] || beat.category;
-        const titleAndCategoryHtml = `
+
+        item.innerHTML = `
+            <button class="beat-item-play-btn"><i class="fas fa-play"></i></button>
             <div class="beat-item-title-wrapper">
                 <div class="beat-item-title">${beat.title}</div>
                 <div class="beat-item-category">${categoryName}</div>
             </div>
-        `;
-
-        item.innerHTML = `
-            <button class="beat-item-play-btn" aria-label="Αναπαραγωγή ${beat.title}"><i class="fas fa-play"></i></button>
-            ${titleAndCategoryHtml}
             ${priceHtml}
-            <button class="btn share-btn" aria-label="Κοινοποίηση ${beat.title}"><i class="fas fa-share-alt"></i></button>
+            <button class="btn share-btn"><i class="fas fa-share-alt"></i></button>
             ${buyButtonHtml}
         `;
 
+        // --- PLAY BTN
         item.querySelector('.beat-item-play-btn').addEventListener('click', () => handleTracklistClick(playlistIndex, playlist));
-        item.querySelector('.share-btn')?.addEventListener('click', (e) => { e.stopPropagation(); shareBeat(beat); });
 
+        // --- SHARE BTN
+        item.querySelector('.share-btn').addEventListener('click', (e) => { e.stopPropagation(); shareBeat(beat); });
+
+        // --- BUY BTN → STRIPE CHECKOUT
         const buyBtn = item.querySelector('.buy-btn-green');
         if (buyBtn && !buyBtn.disabled) {
-            buyBtn.addEventListener('click', function(e) {
+            buyBtn.addEventListener('click', async function(e) {
                 e.preventDefault();
-                const beatId = this.dataset.beatIdSocial;
-                const viewers = getViewerCount(beatId);
-                const purchaseLink = this.href;
+                const beatId = this.dataset.beatId;
+                const price = parseFloat(this.dataset.price);
 
-                if (a.socialProofViewers) {
-                    a.socialProofViewers.textContent = viewers > 0 ? `${viewers} άλλοι βλέπουν αυτό το προϊόν` : '';
-                }
-
-                if (a.socialProofConfirmBtn) {
-                    a.socialProofConfirmBtn.dataset.link = purchaseLink;
-                }
-                if (a.socialProofModal) {
-                    a.socialProofModal.classList.add('visible');
+                try {
+                    const response = await fetch('/.netlify/functions/create-checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ beatId, price })
+                    });
+                    const session = await response.json();
+                    if (session.id) {
+                        await stripe.redirectToCheckout({ sessionId: session.id });
+                    } else {
+                        alert("Σφάλμα στο checkout");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Αποτυχία Stripe checkout");
                 }
             });
         }
@@ -171,14 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return item;
     }
 
-    // --- VIEW RENDERING LOGIC ---
+    // --- VIEW RENDERING ---
     function renderFullBeatListView(filter) {
         showLoader();
         setTimeout(() => {
             if (!a.beatListEl) return;
             a.beatListEl.innerHTML = '';
-            let filteredBeats = a.data.beats;
 
+            let filteredBeats = a.data.beats;
             if (filter.type === 'category') {
                 filteredBeats = filter.value === 'all'
                     ? a.data.beats.filter(b => b.category !== 'ai' && b.category !== 'custom')
@@ -237,13 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
     }
 
-    // --- AUDIO PLAYER LOGIC ---
+    // --- AUDIO & PLAYER LOGIC ---
     function handleTracklistClick(index, playlist) {
         const track = playlist[index];
         if (!track || !a.mainAudio) return;
         if (a.state.currentPlaylist !== playlist) a.state.currentPlaylist = playlist;
-        if (a.state.currentTrackIndex === index && !a.mainAudio.paused) a.mainAudio.pause();
-        else playTrack(index);
+        if (a.state.currentTrackIndex === index && !a.mainAudio.paused) {
+            a.mainAudio.pause();
+        } else playTrack(index);
     }
 
     function playTrack(index) {
@@ -276,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (playBtnIcon) playBtnIcon.className = 'fas fa-play';
         });
 
-        if (a.mainAudio && !a.mainAudio.paused && a.state.currentTrackIndex > -1 && a.state.currentPlaylist[a.state.currentTrackIndex]) {
+        if (a.mainAudio && !a.mainAudio.paused && a.state.currentTrackIndex > -1) {
             const playingBeatId = a.state.currentPlaylist[a.state.currentTrackIndex].id;
             const currentItem = document.querySelector(`.beat-item[data-beat-id='${playingBeatId}']`);
             if (currentItem) {
@@ -287,11 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- SHARE FUNCTIONALITY ---
+    // --- SHARE ---
     async function shareBeat(beat) {
         const shareUrl = `${window.location.origin}${window.location.pathname}?beat=${beat.id}`;
         if (navigator.share) {
-            try { await navigator.share({ title: `Check out this beat: ${beat.title}`, text: `Listen to "${beat.title}" by VybezMadeThis!`, url: shareUrl }); }
+            try { await navigator.share({ title: `Check this beat: ${beat.title}`, text: `Listen to "${beat.title}"`, url: shareUrl }); }
             catch (err) { console.error('Share failed:', err); }
         } else {
             try { await navigator.clipboard.writeText(shareUrl); alert('Ο σύνδεσμος αντιγράφηκε!'); }
@@ -299,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- VIBE SEARCH LOGIC ---
+    // --- VIBES (bubbles + modal + canvas effects) ---
     function displayRandomVibes() {
         if (!a.vibeBubblesContainer) return;
         a.vibeBubblesContainer.innerHTML = '';
@@ -323,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openVibeModal() {
-        if (!a.vibeModal || !document.body) return;
+        if (!a.vibeModal) return;
         a.vibeModal.classList.add('visible');
         document.body.classList.add('modal-open');
         displayRandomVibes();
@@ -331,40 +335,55 @@ document.addEventListener('DOMContentLoaded', () => {
         if (a.state.vibeAnimationId) cancelAnimationFrame(a.state.vibeAnimationId);
         drawVibeVisualizer();
     }
-
     function closeVibeModal() {
-        if (!a.vibeModal || !document.body) return;
+        if (!a.vibeModal) return;
         a.vibeModal.classList.remove('visible');
         document.body.classList.remove('modal-open');
     }
 
-    // --- VIBE VISUALIZER ---
     function resizeVibeCanvas() {
         if (!a.vibeCanvas) return;
         const container = document.querySelector('#vibe-modal .vibe-modal-content');
         if (!container) return;
         const size = Math.min(container.clientWidth, container.clientHeight);
-        a.vibeCanvas.width = size; a.vibeCanvas.height = size;
+        a.vibeCanvas.width = size;
+        a.vibeCanvas.height = size;
     }
 
     function drawVibeVisualizer() {
         if (!a.vibeCanvas) return;
-        const ctx = a.vibeCanvas.getContext('2d'), r = a.vibeCanvas.width / 3.5, p = 128, cx = a.vibeCanvas.width/2, cy = a.vibeCanvas.height/2, t = Date.now()*0.0005;
+        const ctx = a.vibeCanvas.getContext('2d'),
+            r = a.vibeCanvas.width / 3.5,
+            p = 128, 
+            cx = a.vibeCanvas.width / 2,
+            cy = a.vibeCanvas.height / 2,
+            t = Date.now() * 0.0005;
+
         ctx.clearRect(0, 0, a.vibeCanvas.width, a.vibeCanvas.height);
         ctx.beginPath();
         for (let i = 0; i <= p; i++) {
-            const angle = (i/p)*Math.PI*2, wave = Math.sin(t + i*0.5)*10, pulse = (Math.sin(t*2)+1)/2 * 15, currentRadius = r + wave + pulse;
-            const x = cx + Math.cos(angle) * currentRadius, y = cy + Math.sin(angle) * currentRadius;
+            const angle = (i/p)*Math.PI*2,
+                  wave = Math.sin(t + i*0.5) * 10,
+                  pulse = (Math.sin(t*2)+1)/2 * 15,
+                  currentRadius = r + wave + pulse;
+            const x = cx + Math.cos(angle) * currentRadius,
+                  y = cy + Math.sin(angle) * currentRadius;
             i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
         const g = ctx.createRadialGradient(cx, cy, r - 20, cx, cy, r + 20);
-        g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(200,200,255,0.8)'); g.addColorStop(1, 'rgba(126,87,194,0)');
-        ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.shadowColor = 'rgba(200,200,255,0.8)'; ctx.shadowBlur = 15;
-        ctx.stroke(); ctx.shadowBlur = 0;
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(0.5, 'rgba(200,200,255,0.8)');
+        g.addColorStop(1, 'rgba(126,87,194,0)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = 'rgba(200,200,255,0.8)';
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
         a.state.vibeAnimationId = requestAnimationFrame(drawVibeVisualizer);
     }
 
-    // --- INITIALIZATION & EVENT LISTENERS ---
+    // --- INITIALIZATION ---
     function initializeApp() {
         const urlParams = new URLSearchParams(window.location.search);
         const sharedBeatId = urlParams.get('beat');
@@ -376,32 +395,29 @@ document.addEventListener('DOMContentLoaded', () => {
             else renderFullBeatListView({ type: 'category', value: 'all' });
         } else {
             renderFullBeatListView({ type: 'category', value: 'all' });
+
             if (a.categoryButtons) a.categoryButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     a.categoryButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     const cat = button.dataset.category;
-                    if(a.searchInput) a.searchInput.value = '';
+                    if (a.searchInput) a.searchInput.value = '';
 
-                    // --- ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΕΜΦΑΝΙΣΗ ΤΩΝ INFO BOXES & VAULT ACCORDION ---
                     Object.values(a.infoBoxes).forEach(box => { if (box) box.style.display = 'none'; });
                     if (a.vaultInfoAccordion) {
-                        if (cat === 'vault') {
-                            a.vaultInfoAccordion.style.display = 'block';
-                        } else {
+                        if (cat === 'vault') a.vaultInfoAccordion.style.display = 'block';
+                        else {
                             a.vaultInfoAccordion.style.display = 'none';
                             a.vaultInfoAccordion.removeAttribute('open');
                         }
                     }
-                    if (a.infoBoxes[cat]) {
-                        a.infoBoxes[cat].style.display = 'block';
-                    } else if (a.infoBoxes.general) {
-                        a.infoBoxes.general.style.display = 'block';
-                    }
+                    if (a.infoBoxes[cat]) a.infoBoxes[cat].style.display = 'block';
+                    else if (a.infoBoxes.general) a.infoBoxes.general.style.display = 'block';
 
                     renderFullBeatListView({ type: 'category', value: cat });
                 });
             });
+
             if(a.searchInput) a.searchInput.addEventListener('input', () => {
                 a.categoryButtons.forEach(btn => btn.classList.remove('active'));
                 Object.values(a.infoBoxes).forEach(box => { if (box) box.style.display = 'none'; });
@@ -411,31 +427,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        if(a.player.playPauseBtn) a.player.playPauseBtn.addEventListener('click', () => { if (a.mainAudio && a.mainAudio.src) a.mainAudio.paused ? a.mainAudio.play() : a.mainAudio.pause(); });
+        // PLAYER listeners
+        if(a.player.playPauseBtn) a.player.playPauseBtn.addEventListener('click', () => {
+            if (a.mainAudio && a.mainAudio.src) a.mainAudio.paused ? a.mainAudio.play() : a.mainAudio.pause();
+        });
         if(a.player.nextBtn) a.player.nextBtn.addEventListener('click', playNext);
         if(a.player.prevBtn) a.player.prevBtn.addEventListener('click', playPrev);
+
         if(a.mainAudio) {
             a.mainAudio.addEventListener('play', () => { if(a.player.playPauseIcon) a.player.playPauseIcon.className = 'fas fa-pause'; updatePlayingUI(); });
             a.mainAudio.addEventListener('pause', () => { if(a.player.playPauseIcon) a.player.playPauseIcon.className = 'fas fa-play'; updatePlayingUI(); });
             a.mainAudio.addEventListener('ended', playNext);
             a.mainAudio.addEventListener('timeupdate', () => {
-                if (!a.mainAudio) return; const { currentTime, duration } = a.mainAudio;
+                if (!a.mainAudio) return;
+                const { currentTime, duration } = a.mainAudio;
                 if (duration && a.player.progressBar && a.player.timeDisplay) {
                     a.player.progressBar.style.width = `${(currentTime / duration) * 100}%`;
-                    const formatTime = s => { if(isNaN(s)||s<0)return "0:00"; const m = Math.floor(s/60); const sc = Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; };
+                    const formatTime = s => {
+                        if(isNaN(s)||s<0)return "0:00";
+                        const m = Math.floor(s/60);
+                        const sc = Math.floor(s%60);
+                        return `${m}:${sc<10?'0':''}${sc}`;
+                    };
                     a.player.timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
                 }
             });
         }
-        if(a.player.progressBarContainer) a.player.progressBarContainer.addEventListener('click', e => { if (a.mainAudio && a.mainAudio.duration) a.mainAudio.currentTime = (e.offsetX/a.player.progressBarContainer.clientWidth)*a.mainAudio.duration; });
+        if(a.player.progressBarContainer) a.player.progressBarContainer.addEventListener('click', e => {
+            if (a.mainAudio && a.mainAudio.duration) a.mainAudio.currentTime = (e.offsetX/a.player.progressBarContainer.clientWidth)*a.mainAudio.duration;
+        });
 
-        // Vibe Modal Listeners
+        // Vibes modal listeners
         if(a.vibeBtn) a.vibeBtn.addEventListener('click', openVibeModal);
         if(a.vibeModalClose) a.vibeModalClose.addEventListener('click', closeVibeModal);
         if(a.vibeModal) a.vibeModal.addEventListener('click', e => { if (e.target === a.vibeModal) closeVibeModal(); });
         if(a.shuffleVibesBtn) a.shuffleVibesBtn.addEventListener('click', displayRandomVibes);
 
-        // Social Proof Modal Listeners
+        // Social proof modal
         if(a.socialProofConfirmBtn) {
             a.socialProofConfirmBtn.addEventListener('click', function() {
                 const link = this.dataset.link;
