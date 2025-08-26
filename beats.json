@@ -13,6 +13,21 @@
         "upbeat"
       ],
       "checkoutUrl": "https://payhip.com/b/fSD16"
+    },
+    {
+      "price": 79.99,
+      "audioSrc": "/uploads/grenzenlos-tagged.mp3",
+      "status": "available",
+      "title": "Grenzenlos",
+      "tags": [
+        "club",
+        "trap",
+        "afrotrap"
+      ],
+      "id": 1,
+      "category": "trap",
+      "bpm": 135,
+      "key": "Fm"
     }
   ]
 }
