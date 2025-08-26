@@ -1,0 +1,19 @@
+backend:
+  name: git-gateway
+  branch: main   # ή το branch σου στο GitHub (π.χ. master)
+
+media_folder: "uploads"     # εκεί θα πάνε τα αρχεία που ανεβάζεις
+public_folder: "/uploads"
+
+collections:
+  - name: "beats"
+    label: "Beats"
+    label_singular: "Beat"
+    description: "Upload and manage your beats"
+    file: "beats.json"     # ΣΩΣΤΟ: δουλεύει με το υπάρχον beats.json
+    fields:
+      - { name: "title", label: "Title", widget: "string" }
+      - { name: "bpm", label: "BPM", widget: "number" }
+      - { name: "key", label: "Key", widget: "string" }
+      - { name: "price", label: "Price", widget: "number" }
+      - { name: "file", label: "Beat File", widget: "file" }
