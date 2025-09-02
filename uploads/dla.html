@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>DLAdrops — OUTBURST Drop</title>
+  <meta name="description" content="DLAdrops — OUTBURST: Limited Beat Drops, Loop/Sample Kits & Merch. Inspired by the ZAIROK universe. For creators, artists, and misfits." />
+  <meta name="theme-color" content="#05050a" />
+  <link rel="icon" href="favicon.png" type="image/png">
+
+  <style>
+    :root{
+      --bg-0:#05050a;          /* deeper black */
+      --bg-1:#0a0a13;          /* bg body */
+      --bg-2:#0f0f1f;          /* cards */
+      --ink:#e9ebff;           /* text */
+      --muted:#9aa0c2;         /* secondary */
+      --neon-1:#7c3aed;        /* violet */
+      --neon-2:#22d3ee;        /* cyan */
+      --neon-3:#f472b6;        /* pink */
+      --stroke:#262647;        /* subtle borders */
+      --radius:16px;
+      --shadow:0 10px 40px rgba(0,0,0,.65);
+      --grad-bg: radial-gradient(1200px 800px at 10% -10%, #121234 0%, transparent 60%),
+                 radial-gradient(1200px 900px at 110% 20%, #0b233d 0%, transparent 60%),
+                 linear-gradient(180deg, var(--bg-0), var(--bg-1) 60%);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--ink); background:var(--grad-bg) fixed; overflow-x:hidden;
+      font: 15px/1.65 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      letter-spacing:.1px;
+      cursor: url('cursor.png'), auto;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%; display:block}
+    .scanlines::before{
+      content:""; position:fixed; inset:0; pointer-events:none; z-index:2;
+      background: repeating-linear-gradient( to bottom, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 2px );
+      mix-blend-mode: soft-light; opacity:.15;
+      animation: flicker 8s infinite linear;
+    }
+    .noise::after{
+      content:""; position:fixed; inset:-20%; pointer-events:none; z-index:1; opacity:.09;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".35"/></svg>');
+      animation: noiseShift 1.8s steps(6,end) infinite;
+    }
+    @keyframes flicker{ 0%,100%{opacity:.12} 50%{opacity:.18} }
+    @keyframes noiseShift{ from{transform:translate3d(0,0,0)} to{transform:translate3d(-10%,10%,0)} }
+    .wrap{width:min(1200px, 92%); margin-inline:auto}
+    .section{padding: clamp(48px, 7vw, 110px) 0}
+    .grid{display:grid; gap:22px}
+    .g-2{grid-template-columns: 1fr 1fr}
+    .g-3{grid-template-columns: repeat(3, minmax(0,1fr))}
+    @media (max-width:980px){ .g-2{grid-template-columns: 1fr} }
+    @media (max-width:920px){ .g-3{grid-template-columns: 1fr 1fr} }
+    @media (max-width:620px){ .g-3{grid-template-columns: 1fr} }
+    header{position:sticky; top:0; z-index:50; backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(5,5,12,.92), rgba(5,5,12,.55));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:18px;letter-spacing:.4px}
+    .menu{display:flex;gap:16px;align-items:center}
+    .menu a{padding:10px 12px;border-radius:10px;position:relative}
+    .menu a::after{content:""; position:absolute; left:10px; right:10px; bottom:6px; height:2px;
+      background: linear-gradient(90deg, transparent, var(--neon-1), var(--neon-2), var(--neon-3), transparent);
+      transform: scaleX(0); transform-origin: center; transition: transform .25s ease;}
+    .menu a:hover::after{ transform: scaleX(1)}
+    .hamb{display:none}
+    @media (max-width:860px){
+      .hamb{display:inline-flex;align-items:center;justify-content:center; width:40px;height:40px;border:1px solid var(--stroke);border-radius:12px;background:#0a0a16}
+      .menu{position:fixed;inset:66px 0 auto 0; background: rgba(6,6,16,.96); border-bottom:1px solid rgba(255,255,255,.06);
+        display:none; flex-direction:column; padding:14px}
+      .menu.open{display:flex}
+    }
+    .glitch{position:relative; display:inline-block; font-weight:900; line-height:1.05;
+      font-size: clamp(30px, 6vw, 64px);
+      text-transform:uppercase; letter-spacing:.04em; isolation:isolate}
+    .glitch span{position:relative; display:block;}
+    .glitch::before, .glitch::after{
+      content: attr(data-text);
+      position:absolute; inset:0; pointer-events:none; mix-blend-mode: screen; filter: blur(.3px);
+    }
+    .glitch::before{ color: var(--neon-2); transform: translate(2px, -1px); clip-path: polygon(0 2%,100% 0,100% 32%,0 34%); animation:gl1 3.2s infinite linear alternate-reverse}
+    .glitch::after{  color: var(--neon-3); transform: translate(-2px, 1px); clip-path: polygon(0 68%,100% 66%,100% 100%,0 100%); animation:gl2 2.6s infinite linear alternate}
+    @keyframes gl1{ 0%{transform:translate(1px,-1px)} 35%{transform:translate(3px,-1.5px)} 70%{transform:translate(1.5px,-.5px)} 100%{transform:translate(2px,-1px)} }
+    @keyframes gl2{ 0%{transform:translate(-1px,1px)} 25%{transform:translate(-2.5px,1.5px)} 60%{transform:translate(-1.2px,.6px)} 100%{transform:translate(-2px,1px)} }
+    .badge{display:inline-flex;align-items:center;gap:10px; padding:8px 12px; border-radius:999px; font-weight:700; letter-spacing:.3px;
+      background: linear-gradient(90deg, rgba(124,58,237,.2), rgba(34,211,238,.18)); border:1px solid rgba(124,58,237,.45); box-shadow:0 0 18px rgba(124,58,237,.25) inset}
+    .dot-mini{width:8px;height:8px;border-radius:50%; background:radial-gradient(circle at 30% 30%, var(--neon-2), var(--neon-1)); box-shadow:0 0 14px rgba(34,211,238,.95)}
+    .btn{display:inline-flex;align-items:center;gap:10px; padding:12px 16px; border-radius:12px; font-weight:800; letter-spacing:.2px;
+      background: #0b0b1c; border:1px solid var(--stroke); position:relative; isolation:isolate; overflow:hidden;
+      transition: transform .12s ease, border-color .2s ease;}
+    .btn:hover{ transform: translateY(-1px); border-color:#3a3a6b }
+    .btn .glow{content:""; position:absolute; inset:-1px; border-radius: inherit; background: conic-gradient(from 0deg, var(--neon-1), var(--neon-2), var(--neon-3), var(--neon-1)); filter: blur(18px); opacity:.18; z-index:-1; animation: spin 7s linear infinite}
+    .btn.primary{ background: linear-gradient(180deg, #17173b, #0e0e26); border-color:#3a3a6b }
+    @keyframes spin{ to{ transform: rotate(360deg)} }
+    .card{background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)); border:1px solid var(--stroke);
+      border-radius:var(--radius); padding:20px; box-shadow: var(--shadow); position:relative; overflow:hidden}
+    .card::after{content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit; padding:1px;
+      background: linear-gradient(90deg, rgba(124,58,237,.5), rgba(34,211,238,.4)); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity:.28}
+    .hero{display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:center; padding: clamp(30px,4vw,54px) 0 0}
+    @media (max-width:980px){ .hero{grid-template-columns:1fr} }
+    .lead{color:#cdd0ee; font-size: clamp(15px, 2.2vw, 18px)}
+    .timer{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .tbox{min-width:86px; text-align:center; padding:12px 10px; border:1px solid var(--stroke); border-radius:12px;
+      background:#0a0a18; box-shadow: var(--shadow)}
+    .tval{font-size:24px; font-weight:900}
+    .tlabel{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.22em}
+    .vimeo-wrapper {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+    .vimeo-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+    
+    .hero-title-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .category-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .tab-pill {
+        background: #0a0a18;
+        border: 1px solid var(--stroke);
+        border-radius: 999px;
+        padding: 12px 24px;
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .tab-pill:hover {
+        color: var(--ink);
+        border-color: #3a3a6b;
+    }
+    .tab-pill.active {
+        color: var(--ink);
+        border-color: var(--neon-1);
+        background: linear-gradient(90deg, rgba(124,58,237,.2), rgba(34,211,238,.18));
+        box-shadow: 0 0 12px rgba(124,58,237,.3);
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr)); 
+      gap:16px; 
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.6s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.6s ease-in-out;
+      margin-top: 0;
+    }
+    .products.open {
+      max-height: 2000px; /* Large value */
+      opacity: 1;
+      margin-top: 20px;
+    }
+    
+    .hero-banner {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+    }
+
+    @media (max-width:1100px){ .products{grid-template-columns: repeat(3, minmax(0,1fr))} }
+    @media (max-width:820px){ .products{grid-template-columns: repeat(2, minmax(0,1fr))} }
+    @media (max-width:520px){ .products{grid-template-columns: 1fr} }
+    .item{position:relative; overflow:hidden}
+    .thumb{aspect-ratio: 1/1; border-radius:12px; background:#0b0b19 url('') center/cover no-repeat; border:1px solid var(--stroke)}
+    .info{padding:10px 4px}
+    .title{font-weight:800; font-size:15px}
+    .meta{color:var(--muted); font-size:13px}
+    .price{font-weight:900}
+    .sold{position:absolute; top:10px; left:10px; padding:6px 10px; border-radius:999px; background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.5); font-weight:800}
+    .gallery{display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px}
+    @media (max-width:980px){ .gallery{grid-template-columns: 1fr 1fr} }
+    @media (max-width:620px){ .gallery{grid-template-columns: 1fr} }
+    .pane{border:1px solid var(--stroke); border-radius:14px; overflow:hidden; background:#0a0a16; aspect-ratio: 16/10}
+    footer{padding:40px 0; border-top:1px solid rgba(255,255,255,.06); color:#b6b7c8}
+    .row{display:flex; gap:12px; flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    .mt-2{margin-top:8px}.mt-3{margin-top:14px}.mt-4{margin-top:22px}.mt-6{margin-top:32px}.mt-8{margin-top:44px}
+    .center{text-align:center}
+
+    .lang-switcher { display: flex; align-items: center; gap: 8px; }
+    .lang-switcher button {
+      background: none; border: none; color: var(--muted); font-weight: 700;
+      cursor: pointer; padding: 4px; opacity: 0.6;
+    }
+    .lang-switcher button.active {
+      color: var(--ink); opacity: 1;
+    }
+  </style>
+</head>
+<body class="scanlines noise">
+
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="wrap nav">
+      <a href="/" class="brand">
+        <img src="https://raw.githubusercontent.com/Visionsoundhub/beatsvybez/main/uploads/logoo.png" alt="DLAdrops Logo" style="height: 35px; width: auto;">
+      </a>
+      <nav style="display: flex; align-items: center; gap: 20px;">
+        <div class="menu" id="menu">
+          <a href="#drop">
+            <span lang="el">Το Drop</span>
+            <span lang="en" hidden>The Drop</span>
+          </a>
+          <a href="#products">
+            <span lang="el">Προϊόντα</span>
+            <span lang="en" hidden>Products</span>
+          </a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="lang-switcher">
+          <button id="lang-el" class="active">GR</button>
+          <span>|</span>
+          <button id="lang-en">EN</button>
+        </div>
+        <button class="hamb" id="hamb" aria-label="Menu" aria-expanded="false">☰</button>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- ===== Hero Banner ===== -->
+  <div>
+    <img src="https://raw.githubusercontent.com/Visionsoundhub/beatsvybez/main/art.jpg" alt="Artistic Banner" class="hero-banner">
+  </div>
+
+  <!-- ===== HERO / DROP ===== -->
+  <section id="drop" class="wrap hero">
+    <div>
+      <div class="hero-title-group">
+        <h1 class="glitch" data-text="OUTBURST"><span>OUTBURST</span></h1>
+        <div class="badge mt-3">
+            <span class="dot-mini"></span>
+            <span lang="el">DROP 01: ΕΡΧΕΤΑΙ ΣΥΝΤΟΜΑ</span>
+            <span lang="en" hidden>DROP 01: COMING SOON</span>
+        </div>
+      </div>
+      <p class="lead mt-4">
+        <span lang="el">Το πρώτο επίσημο drop. Limited <b>Beats</b>, <b>Loop Kits</b> & <b>Merch</b> εμπνευσμένα από το σύμπαν του ZAIROK. Μόλις το χρονόμετρο μηδενίσει, εξαφανίζονται για πάντα!</span>
+        <span lang="en" hidden>The first official drop. Limited <b>Beats</b>, <b>Loop Kits</b> & <b>Merch</b> inspired by the ZAIROK universe. Once they're gone, they're gone.</span>
+      </p>
+
+      <div class="timer" id="timer" aria-live="polite">
+        <div class="tbox"><div class="tval" id="d">00</div><div class="tlabel" lang="el">Μέρες</div><div class="tlabel" lang="en" hidden>Days</div></div>
+        <div class="tbox"><div class="tval" id="h">00</div><div class="tlabel" lang="el">Ώρες</div><div class="tlabel" lang="en" hidden>Hours</div></div>
+        <div class="tbox"><div class="tval" id="m">00</div><div class="tlabel" lang="el">Λεπτά</div><div class="tlabel" lang="en" hidden>Minutes</div></div>
+        <div class="tbox"><div class="tval" id="s">00</div><div class="tlabel" lang="el">Δευτ/πτα</div><div class="tlabel" lang="en" hidden>Seconds</div></div>
+      </div>
+
+      <div class="row mt-4">
+        <a href="#products" class="btn primary"><span class="glow"></span>
+            <span lang="el">Δες τα Προϊόντα</span>
+            <span lang="en" hidden>Explore Products</span>
+        </a>
+      </div>
+      <p class="muted mt-3">
+        <span lang="el">Σημείωση: Η διαθεσιμότητα είναι αυστηρά περιορισμένη. Τα προϊόντα κλειδώνουν σε sold out αυτόματα.</span>
+        <span lang="en" hidden>Note: Availability is strictly limited. Products will be locked to sold out automatically.</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="badge"><span class="dot-mini"></span> ZAIROK UNIVERSE</div>
+      <h3 class="mt-2">
+        <span lang="el">Lore Clip — "Η Έκρηξη"</span>
+        <span lang="en" hidden>Lore Clip — "The Outburst"</span>
+      </h3>
+      <div class="vimeo-wrapper mt-2">
+        <iframe src="https://player.vimeo.com/video/YOUR_VIMEO_ID?h=abcd1234&title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Limited Drop Teaser"></iframe>
+      </div>
+      <p class="muted mt-2">
+        <span lang="el">Art & ήχος εμπνευσμένα από το ZAIROK manga. Το θέμα είναι η νευροδιαφορετικότητα — ακατέργαστη και αφιλτράριστη.</span>
+        <span lang="en" hidden>Art & sound inspired by the ZAIROK manga. The theme is neurodiversity — raw and unfiltered.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== PRODUCTS SECTION ===== -->
+  <section id="products" class="section">
+    <div class="wrap">
+      
+      <div class="category-tabs">
+        <button class="tab-pill" data-target="panel-beats">Beats</button>
+        <button class="tab-pill" data-target="panel-kits">Loop Kits</button>
+        <button class="tab-pill" data-target="panel-merch">Merch</button>
+      </div>
+
+      <div class="products-container">
+          <div class="products" id="panel-beats">
+            <article class="item card">
+              <div class="thumb" style="background-image:url('assets/beat-01.jpg')"></div>
+              <div class="info">
+                <div class="title">OUTBURST_01</div>
+                <div class="meta">140 BPM • Key: Dm • Aggressive Drill</div>
+                <div class="row mt-2">
+                  <a href="LINK_TO_BEAT_1_EXCLUSIVE" class="btn primary"><span class="glow"></span>
+                    <span lang="el">Αγόρασε Exclusive</span><span lang="en" hidden>Buy Exclusive</span>
+                  </a>
+                  <a href="LINK_TO_BEAT_1_LEASE" class="btn"><span class="glow"></span>AI Access (Lease)</a>
+                </div>
+              </div>
+            </article>
+            <article class="item card">
+              <div class="thumb" style="background-image:url('assets/beat-02.jpg')"></div>
+              <div class="info">
+                <div class="title">OUTBURST_02</div>
+                <div class="meta">94 BPM • Key: Am • Anime Lofi</div>
+                <div class="row mt-2">
+                  <a href="LINK_TO_BEAT_2_EXCLUSIVE" class="btn primary"><span class="glow"></span>
+                    <span lang="el">Αγόρασε Exclusive</span><span lang="en" hidden>Buy Exclusive</span>
+                  </a>
+                  <a href="LINK_TO_BEAT_2_LEASE" class="btn"><span class="glow"></span>AI Access (Lease)</a>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="products" id="panel-kits">
+            <article class="item card">
+              <div class="thumb" style="background-image:url('assets/kit-01.jpg')"></div>
+              <div class="info">
+                <div class="title">OUTBURST — Drum Kit</div>
+                <div class="meta">120 one-shots • Kicks/Snares/FX</div>
+                <div class="row mt-2">
+                  <a href="LINK_TO_KIT_1" class="btn primary"><span class="glow"></span>
+                    <span lang="el">Αγόρασε Kit</span><span lang="en" hidden>Buy Kit</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="products" id="panel-merch">
+            <article class="item card">
+              <div class="thumb" style="background-image:url('assets/merch-01.jpg')"></div>
+              <div class="info">
+                <div class="title">OUTBURST — Tee</div>
+                <div class="meta">Black • S–XXL • Heavyweight Cotton</div>
+                <div class="row mt-2">
+                  <a href="LINK_TO_MERCH_1" class="btn primary"><span class="glow"></span>
+                    <span lang="el">Αγόρασε T-shirt</span><span lang="en" hidden>Shop Tee</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq" class="section">
+    <div class="wrap grid">
+      <div class="card">
+        <h3>
+          <span lang="el">Συχνές Ερωτήσεις</span>
+          <span lang="en" hidden>Frequently Asked Questions</span>
+        </h3>
+        <details class="mt-2">
+          <summary><b><span lang="el">Πόσο "limited" είναι το "limited";</span><span lang="en" hidden>How limited is "limited"?</span></b></summary>
+          <p class="muted">
+            <span lang="el">Τα exclusive beats πωλούνται μόνο μία φορά. Τα loop kits και το merch έχουν σταθερό απόθεμα και δεν θα ανανεωθούν μόλις εξαντληθούν. Ποτέ.</span>
+            <span lang="en" hidden>Exclusive beats are sold only once. Loop kits and merch have a fixed stock count and will not be restocked once sold out. Ever.</span>
+          </p>
+        </details>
+        <details class="mt-2">
+          <summary><b><span lang="el">Τι είναι το "AI Access (Lease)";</span><span lang="en" hidden>What is "AI Access (Lease)"?</span></b></summary>
+          <p class="muted">
+            <span lang="el">Μια μη αποκλειστική άδεια με σαφείς όρους για χαμηλότερη τιμή. Για πλήρη ιδιοκτησία, αγοράστε τα αποκλειστικά δικαιώματα.</span>
+            <span lang="en" hidden>A non-exclusive license with clear terms for a lower price. For full ownership, purchase the exclusive rights.</span>
+          </p>
+        </details>
+        <details class="mt-2">
+          <summary><b><span lang="el">Πώς αγοράζω;</span><span lang="en" hidden>How do I purchase?</span></b></summary>
+          <p class="muted">
+            <span lang="el">Όλες οι πληρωμές διεκπεραιώνονται μέσω ασφαλούς checkout. Χρησιμοποιούμε Stripe & Printful.</span>
+            <span lang="en" hidden>All payments are processed through a secure checkout. We use Stripe & Printful.</span>
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>© <span id="year"></span> DLAdrops. <span lang="el">Με επιφύλαξη παντός δικαιώματος.</span><span lang="en" hidden>All rights reserved.</span></div>
+      <div class="row">
+        <a class="btn" href="https://instagram.com/vybezmadethis" target="_blank" rel="noopener"><span class="glow"></span>Instagram</a>
+        <a class="btn" href="https://tiktok.com/@vybezmadethis" target="_blank" rel="noopener"><span class="glow"></span>TikTok</a>
+        <a class="btn" href="https://youtube.com/YOUR_YOUTUBE_CHANNEL" target="_blank" rel="noopener"><span class="glow"></span>YouTube</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    hamb?.addEventListener('click', ()=>{
+      const open = menu.classList.toggle('open');
+      hamb.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Countdown
+    const deadline = new Date('2025-10-01T20:00:00+03:00'); 
+    const dEl = document.getElementById('d');
+    const hEl = document.getElementById('h');
+    const mEl = document.getElementById('m');
+    const sEl = document.getElementById('s');
+    function tick(){
+      const now = new Date();
+      let diff = Math.max(0, deadline - now);
+      if (diff === 0) { /* Handle countdown end */ }
+      const d = Math.floor(diff / (1000*60*60*24)); diff -= d*24*60*60*1000;
+      const h = Math.floor(diff / (1000*60*60)); diff -= h*60*60*1000;
+      const m = Math.floor(diff / (1000*60)); diff -= m*60*1000;
+      const s = Math.floor(diff / 1000);
+      if(dEl) dEl.textContent = String(d).padStart(2,'0');
+      if(hEl) hEl.textContent = String(h).padStart(2,'0');
+      if(mEl) mEl.textContent = String(m).padStart(2,'0');
+      if(sEl) sEl.textContent = String(s).padStart(2,'0');
+    }
+    tick(); setInterval(tick, 1000);
+
+    // Category Accordion Logic
+    const categoryTabs = document.querySelectorAll('.tab-pill');
+    
+    categoryTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetPanelId = tab.dataset.target;
+            const targetPanel = document.getElementById(targetPanelId);
+            const isAlreadyOpen = targetPanel.classList.contains('open');
+
+            // Close all panels and deactivate all tabs
+            document.querySelectorAll('.products').forEach(p => p.classList.remove('open'));
+            categoryTabs.forEach(t => t.classList.remove('active'));
+
+            // If it wasn't already open, open it and activate its tab
+            if (!isAlreadyOpen) {
+                targetPanel.classList.add('open');
+                tab.classList.add('active');
+            }
+        });
+    });
+
+    // ====== LANGUAGE SWITCHER SCRIPT ======
+    const langButtons = {
+        el: document.getElementById('lang-el'),
+        en: document.getElementById('lang-en'),
+    };
+    const translatableElements = document.querySelectorAll('[lang]');
+
+    function setLanguage(lang) {
+        document.documentElement.lang = lang;
+        langButtons.el.classList.toggle('active', lang === 'el');
+        langButtons.en.classList.toggle('active', lang === 'en');
+        translatableElements.forEach(el => {
+            el.hidden = el.lang !== lang;
+        });
+    }
+
+    langButtons.el.addEventListener('click', () => setLanguage('el'));
+    langButtons.en.addEventListener('click', () => setLanguage('en'));
+    
+    setLanguage('el');
+
+  </script>
+</body>
+</html>
+
